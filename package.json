@@ -1,0 +1,23 @@
+{
+  "name": "sqldev",
+  "version": "1.0.0",
+  "description": "Restful API exercises, fun with colors!",
+  "main": "sql_test.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/DSMK2/node_dev.git"
+  },
+  "author": "Aric \"DSMK2\" Ng",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DSMK2/node_dev/issues"
+  },
+  "homepage": "https://github.com/DSMK2/node_dev#readme",
+  "dependencies": {
+    "express": "^4.14.0",
+    "mysql2": "^1.1.2"
+  }
+}
