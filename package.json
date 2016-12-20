@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/DSMK2/node_dev.git"
+    "url": "https://git.heroku.com/nameless-beach-23352.git"
   },
   "author": "Aric \"DSMK2\" Ng",
   "license": "ISC",
