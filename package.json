@@ -2,9 +2,9 @@
   "name": "sqldev",
   "version": "1.0.0",
   "description": "Restful API exercises, fun with colors!",
-  "main": "sql_test.js",
+  "main": "web.js",
   "scripts": {
-    "start": "node sql_test.js"
+    "start": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
