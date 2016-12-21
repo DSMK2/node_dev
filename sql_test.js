@@ -6,7 +6,7 @@ const app = Express();
 // SQL connection handling
 const MySQL = require('mysql2');
 
-app.get('/', (req, res => {
+app.get('/', (req, res) => {
 	res.send("<p>Hello World!</p>");
 });
 
