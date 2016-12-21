@@ -6,6 +6,9 @@ const app = Express();
 // SQL connection handling
 const MySQL = require('mysql2');
 
+app.get('/', (req, res => {
+	res.send("<p>Hello World!</p>");
+});
 
 app.get('/getColors', (req, res) => {
 	let connection = MySQL.createConnection({
@@ -18,7 +21,9 @@ app.get('/getColors', (req, res) => {
 	connection.execute('SELECT * FROM `color_fun`', (err, results, fields) => {
 		//if(err)
 			//res.send(err);
-		
+		res.header('Access-Control-Allow-Origin', '*');
+		res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
+		res.header('Access-Control-Allow-Headers', 'accept, content-type, x-parse-application-id, x-parse-rest-api-key, x-parse-session-token');
 		if(results)
 			res.send(results);
 			
