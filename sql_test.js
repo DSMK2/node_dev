@@ -16,14 +16,14 @@ app.get('/getColors', (req, res) => {
 	});
 	
 	connection.execute('SELECT * FROM `color_fun`', (err, results, fields) => {
-		if(err)
-			res.send(err);
+		//if(err)
+			//res.send(err);
 		
 		if(results)
 			res.send(results);
 			
-		if(fields)
-			res.send(fields);
+		//if(fields)
+			//res.send(fields);
 	});
 	
 	connection.end();
