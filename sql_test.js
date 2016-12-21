@@ -15,7 +15,7 @@ app.get('/getColors', (req, res) => {
 		database: process.env.DB_NAME
 	});
 	
-	connection.execute('SELECT * FROM `color_fun`', (err, results, fields) {
+	connection.execute('SELECT * FROM `color_fun`', (err, results, fields) => {
 		if(err)
 			res.send(err);
 		
