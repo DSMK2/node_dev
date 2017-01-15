@@ -8,6 +8,15 @@ const app = Express();
 const MySQL = require('mysql2');
 // Misc Libraries
 const url = require('url');
+const bodyParser = require('body-parser');
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+	extended: true
+}));
+
+app.use(Express.json());
+app.use(Express.urlencoded());
 
 app.get('/', (req, res) => {
 	res.send("<p>Hello World!</p>");
@@ -40,7 +49,7 @@ app.get('/getColors', (req, res) => {
 });
 
 app.post(/addColor\/(rgb|hex)/, (req, res) => {
-	let query = req.query;
+	let data = req.body;
 	let url_info = url.parse(req.url);
 	let type;
 	
@@ -60,34 +69,34 @@ app.post(/addColor\/(rgb|hex)/, (req, res) => {
 	res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
 	res.header('Access-Control-Allow-Headers', 'accept, content-type, x-parse-application-id, x-parse-rest-api-key, x-parse-session-token');
 
-	console.log(query, url);
+	console.log('addColor', data.r, data.g, data.b, data.hex, url_info);
 	
 	// RGB Handling
 	if(type === 'rgb') {
 		// Must have RGB values
-		if(typeof query.r !== 'undefined' || typeof query.g !== 'undefined' || typeof query.b !== 'undefined') {
+		if(typeof data.r !== 'undefined' || typeof data.g !== 'undefined' || typeof data.b !== 'undefined') {
 			let regexRGB = /[0-9]{1,3}/; // Match numbers
 			
-			if (regexRGB.test(query.r))
-				R = parseInt(query.r);
+			if (regexRGB.test(data.r))
+				R = parseInt(data.r);
 			
-			if (regexRGB.test(query.g))
-				G = parseInt(query.g);
+			if (regexRGB.test(data.g))
+				G = parseInt(data.g);
 				
-			if (regexRGB.test(query.b))
-				B = parseInt(query.b);
+			if (regexRGB.test(data.b))
+				B = parseInt(data.b);
 		}
 	// Hex Handling
 	} else if (type === 'hex') {
 		// Must have HEX value
-		if(typeof query.hex !== 'undefined') {
+		if(typeof data.hex !== 'undefined') {
 			let regexHex = /#([0-9]|[A-F]){6}/;
 			
-			if(regexHex.test(query.hex)) {
-				query.hex.replace('#', '');
-				R = parseInt(query.hex.substring(0, 1), 16);
-				G = parseInt(query.hex.substring(2, 3), 16);
-				B = parseInt(query.hex.substring(4, 5), 16);
+			if(regexHex.test(data.hex)) {
+				data.hex.replace('#', '');
+				R = parseInt(data.hex.substring(0, 1), 16);
+				G = parseInt(data.hex.substring(2, 3), 16);
+				B = parseInt(data.hex.substring(4, 5), 16);
 			}
 		}
 	}
