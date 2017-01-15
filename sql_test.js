@@ -93,18 +93,20 @@ app.post(/addColor\/(rgb|hex)/, (req, res) => {
 			
 			if(regexHex.test(data.hex)) {
 				data.hex = data.hex.replace('#', '');
-				R = parseInt(data.hex.substring(0, 1), 16);
-				G = parseInt(data.hex.substring(2, 3), 16);
-				B = parseInt(data.hex.substring(4, 5), 16);
-				console.log('Hex: ' + R + ' ' + G + ' ' + B);
+				R = parseInt(data.hex.substring(0, 2), 16);
+				G = parseInt(data.hex.substring(2, 4), 16);
+				B = parseInt(data.hex.substring(4, 6), 16);
+				console.log('Hex: ' + data.hex + ' ' + R + ' ' + G + ' ' + B);
 			}
 		}
 	}
 	
 	if(R === -1 || G === -1 || B === -1) {
+		console.log('addColor Failed: No valid values for RGB found');
 		res.send('addColor: ' + 'asdf' + ' failed with: ' + query);
 		return;
-	}
+	} else 
+		console.log('addColor Success: Attempting SQL insert');
 	
 	//res.send('addColor: ' + params + ' succeeded with: ' + query);
 	
