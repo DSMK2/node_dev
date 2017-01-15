@@ -128,7 +128,7 @@ app.post(/addColor\/(rgb|hex)/, (req, res) => {
 		if(result)
 			res.send(result);
 	});
-	
+	console.log(query);
 	connection.end();
 });
 
