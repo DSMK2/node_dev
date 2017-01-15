@@ -53,6 +53,8 @@ app.post(/addColor\/(rgb|hex)/, (req, res) => {
 	let url_info = url.parse(req.url);
 	let type;
 	
+	console.log(req.url);
+	
 	if(/hex/.test(url_info.pathname))
 		type = 'hex';
 	if(/rgb/.test(url_info.pathname))
