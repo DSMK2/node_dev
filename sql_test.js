@@ -121,7 +121,7 @@ app.post(/addColor\/(rgb|hex)/, (req, res) => {
 	post.G = G;
 	post.B = B;
 	
-	connection.query('INSERT INTO `color_fun` VALUES SET ?', post, function(error, result, fields) {
+	let query = connection.query('INSERT INTO `color_fun` SET ?', post, function(error, result, fields) {
 		if(error)
 			res.send(error);
 			
