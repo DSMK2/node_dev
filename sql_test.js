@@ -8,15 +8,12 @@ const app = Express();
 const MySQL = require('mysql2');
 // Misc Libraries
 const url = require('url');
-const bodyParser = require('body-parser');
+const BodyParser = require('body-parser');
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({
+app.use(BodyParser.json());
+app.use(BodyParser.urlencoded({
 	extended: true
 }));
-
-app.use(Express.json());
-app.use(Express.urlencoded());
 
 app.get('/', (req, res) => {
 	res.send("<p>Hello World!</p>");
