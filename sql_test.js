@@ -37,7 +37,7 @@ app.get('/getColors', (req, res) => {
 	connection.end();
 });
 
-app.post(/addColors\/(:rgb|:hex)/, (req, res) => {
+app.post(/addColor\/(:rgb|:hex)/, (req, res) => {
 	let query = req.query;
 	let params = req.params;
 	
