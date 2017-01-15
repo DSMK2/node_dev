@@ -68,7 +68,7 @@ app.post(/addColor\/(rgb|hex)/, (req, res) => {
 	res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
 	res.header('Access-Control-Allow-Headers', 'accept, content-type, x-parse-application-id, x-parse-rest-api-key, x-parse-session-token');
 
-	console.log('addColor', data.r, data.g, data.b, data.hex, url_info);
+	console.log('addColor', data.r, data.g, data.b, data.hex, url_info, type);
 	
 	// RGB Handling
 	if(type === 'rgb') {
@@ -89,7 +89,7 @@ app.post(/addColor\/(rgb|hex)/, (req, res) => {
 	} else if (type === 'hex') {
 		// Must have HEX value
 		if(typeof data.hex !== 'undefined') {
-			let regexHex = /#([0-9]|[A-F]){6}/;
+			let regexHex = /#([0-9]|[a-f]){6}/i;
 			
 			if(regexHex.test(data.hex)) {
 				data.hex.replace('#', '');
@@ -101,7 +101,7 @@ app.post(/addColor\/(rgb|hex)/, (req, res) => {
 	}
 	
 	if(R === -1 || G === -1 || B === -1) {
-		res.send('addColor: ' + params + ' failed with: ' + query);
+		res.send('addColor: ' + 'asdf' + ' failed with: ' + query);
 		return;
 	}
 	
