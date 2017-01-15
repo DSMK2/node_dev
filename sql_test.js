@@ -92,7 +92,7 @@ app.post(/addColor\/(rgb|hex)/, (req, res) => {
 			let regexHex = /#([0-9]|[a-f]){6}/i;
 			
 			if(regexHex.test(data.hex)) {
-				data.hex.replace('#', '');
+				data.hex = data.hex.replace('#', '');
 				R = parseInt(data.hex.substring(0, 1), 16);
 				G = parseInt(data.hex.substring(2, 3), 16);
 				B = parseInt(data.hex.substring(4, 5), 16);
