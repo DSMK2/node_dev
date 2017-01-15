@@ -96,6 +96,7 @@ app.post(/addColor\/(rgb|hex)/, (req, res) => {
 				R = parseInt(data.hex.substring(0, 1), 16);
 				G = parseInt(data.hex.substring(2, 3), 16);
 				B = parseInt(data.hex.substring(4, 5), 16);
+				console.log('Hex: ' + R + ' ' + G + ' ' + B);
 			}
 		}
 	}
