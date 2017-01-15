@@ -6,6 +6,8 @@ const Express = require('express');
 const app = Express();
 // SQL connection handling
 const MySQL = require('mysql2');
+// Misc Libraries
+const url = require('url');
 
 app.get('/', (req, res) => {
 	res.send("<p>Hello World!</p>");
@@ -39,8 +41,14 @@ app.get('/getColors', (req, res) => {
 
 app.post(/addColor\/(rgb|hex)/, (req, res) => {
 	let query = req.query;
-	let params = req.params;
-	params.hex = 'hex'
+	let url_info = url.parse(req.url);
+	let type;
+	
+	if(/hex/.test(url_info.pathname))
+		type = 'hex';
+	if(/rgb/.test(url_info.pathname))
+		type = 'rgb';
+
 	// RGB and Hex is broken down to RGB values
 	let R = -1;
 	let G = -1;
@@ -52,10 +60,10 @@ app.post(/addColor\/(rgb|hex)/, (req, res) => {
 	res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
 	res.header('Access-Control-Allow-Headers', 'accept, content-type, x-parse-application-id, x-parse-rest-api-key, x-parse-session-token');
 
-	console.log(query, params);
+	console.log(query, url);
 	
 	// RGB Handling
-	if(typeof params.rgb !== 'undefined') {
+	if(type === 'rgb') {
 		// Must have RGB values
 		if(typeof query.r !== 'undefined' || typeof query.g !== 'undefined' || typeof query.b !== 'undefined') {
 			let regexRGB = /[0-9]{1,3}/; // Match numbers
@@ -70,7 +78,7 @@ app.post(/addColor\/(rgb|hex)/, (req, res) => {
 				B = parseInt(query.b);
 		}
 	// Hex Handling
-	} else if (typeof params.hex !== 'undefined') {
+	} else if (type === 'hex') {
 		// Must have HEX value
 		if(typeof query.hex !== 'undefined') {
 			let regexHex = /#([0-9]|[A-F]){6}/;
@@ -104,7 +112,7 @@ app.post(/addColor\/(rgb|hex)/, (req, res) => {
 	
 	connection.query('INSERT INTO `color_fun` VALUES SET ?', post, function(error, result, fields) {
 		if(error)
-			res.send(error)
+			res.send(error);
 			
 		if(result)
 			res.send(result);
