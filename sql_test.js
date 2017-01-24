@@ -40,9 +40,11 @@ app.get('/', (req, res) => {
 	res.send("<p>Hello World!</p>");
 });
 
-app.get('/getColors', (req, res) => {
+app.get(/getColors(\/average)?/, (req, res) => {
 	
 	let defaults = {from, to};
+	let url_info = url.parse(req.url);
+	let pathParts = url_info.pathname.split();
 	let data = req.body;
 	let query;
 	
@@ -55,61 +57,48 @@ app.get('/getColors', (req, res) => {
 		database: process.env.DB_NAME
 	});
 	
-	query = connection.query('SELECT * FROM `color_fun`' + (typeof data.from !== 'undefined' && typeof data.to !== 'undefined' ? ' LIMIT ?, ?' : ''), [data.from, (data.to-data.from)], (err, results, fields) => {
-		res.header('Access-Control-Allow-Origin', '*');
-		res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
-		res.header('Access-Control-Allow-Headers', 'accept, content-type, x-parse-application-id, x-parse-rest-api-key, x-parse-session-token');
+	// Assume getColors by itself
+	if(pathParts.length === 1) {	
+		query = connection.query('SELECT * FROM `color_fun`' + (typeof data.from !== 'undefined' && typeof data.to !== 'undefined' ? ' LIMIT ?, ?' : ''), [data.from, (data.to-data.from)], (err, results, fields) => {
+			res.header('Access-Control-Allow-Origin', '*');
+			res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
+			res.header('Access-Control-Allow-Headers', 'accept, content-type, x-parse-application-id, x-parse-rest-api-key, x-parse-session-token');
 
 		
-		if(err) {
-			res.status(500);
-			res.send(err);
-		} else if(results) {
-			res.status(200);
-			res.send(results);
-		}
-		//if(fields)
-			//res.send(fields);
-	});
+			if(err) {
+				res.status(500);
+				res.send(err);
+			} else if(results) {
+				res.status(200);
+				res.send(results);
+			}
+			//if(fields)
+				//res.send(fields);
+		});
+	// Average
+	} else if(pathParts.indexOf('average') !== -1) {
+	
+		query = connection.query('SELECT AVG(`R`) AS `R`, AVG(`G`) AS `G`, AVG(`B`) AS `B` FROM `color_fun` GROUP BY R, G, B'), (err, results, fields) => {
+			res.header('Access-Control-Allow-Origin', '*');
+			res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
+			res.header('Access-Control-Allow-Headers', 'accept, content-type, x-parse-application-id, x-parse-rest-api-key, x-parse-session-token');
+
+		
+			if(err) {
+				res.status(500);
+				res.send(err);
+			} else if(results) {
+				res.status(200);
+				res.send(results);
+			}
+
+		});
+	}
 	
 	console.log(query);
-	
+		
 	connection.end();
 });
-
-app.get('/getColors/average', (req, res) => {
-	let defaults = {from, to};
-	let data = req.body;
-	let query;
-	
-	data = extend(defaults, data);
-	
-	let connection = MySQL.createConnection({
-		host: process.env.DB_HOST,
-		user: process.env.DB_USER,
-		password: process.env.DB_PASS,
-		database: process.env.DB_NAME
-	});
-	
-	connection.execute('SELECT AVG(`R`) AS `R`, AVG(`G`) AS `G`, AVG(`B`) AS `B` FROM `color_fun` GROUP BY R, G, B'), (err, results, fields) => {
-		res.header('Access-Control-Allow-Origin', '*');
-		res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
-		res.header('Access-Control-Allow-Headers', 'accept, content-type, x-parse-application-id, x-parse-rest-api-key, x-parse-session-token');
-
-		
-		if(err) {
-			res.status(500);
-			res.send(err);
-		} else if(results) {
-			res.status(200);
-			res.send(results);
-		}
-
-	});
-	
-	
-	connection.end();
-}
 
 app.post(/addColor\/(rgb|hex)/, (req, res) => {
 	let data = req.body;
