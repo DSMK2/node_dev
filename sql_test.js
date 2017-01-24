@@ -10,6 +10,27 @@ const MySQL = require('mysql2');
 const url = require('url');
 const BodyParser = require('body-parser');
 
+/**
+* @function extend
+* @description Light function that creates an object 
+* @param object default_ Object containing "default" values, if the options object doesn't have the default value prop, the default_ prop is used instead
+* @param object options Object containing values to override defaults, properties must match defaults to be used
+* @returns object Object with either or default/option values
+*/
+function extend(default_, options) {
+	let prop;
+	let result = {};
+	
+	for(prop in default_) {
+		if(options.hasOwnProperty(prop))
+			result[prop] = options[prop];
+		else
+			result[prop] = default_[prop];
+	}
+	
+	return result;
+}
+
 app.use(BodyParser.json());
 app.use(BodyParser.urlencoded({
 	extended: true
@@ -20,6 +41,13 @@ app.get('/', (req, res) => {
 });
 
 app.get('/getColors', (req, res) => {
+	
+	let defaults = {from, to};
+	let data = req.body;
+	let query;
+	
+	data = extend(defaults, data);
+	
 	let connection = MySQL.createConnection({
 		host: process.env.DB_HOST,
 		user: process.env.DB_USER,
@@ -27,35 +55,67 @@ app.get('/getColors', (req, res) => {
 		database: process.env.DB_NAME
 	});
 	
-	connection.execute('SELECT * FROM `color_fun`', (err, results, fields) => {
+	query = connection.query('SELECT * FROM `color_fun`' + (typeof data.from !== 'undefined' && typeof data.to !== 'undefined' ? ' LIMIT ?, ?' : ''), [data.from, (data.to-data.from)], (err, results, fields) => {
 		res.header('Access-Control-Allow-Origin', '*');
 		res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
 		res.header('Access-Control-Allow-Headers', 'accept, content-type, x-parse-application-id, x-parse-rest-api-key, x-parse-session-token');
 
 		
-		if(err)
+		if(err) {
+			res.status(500);
 			res.send(err);
-		else if(results)
+		} else if(results) {
+			res.status(200);
 			res.send(results);
-			
+		}
 		//if(fields)
 			//res.send(fields);
 	});
 	
+	console.log(query);
+	
 	connection.end();
 });
+
+app.get('/getColors/average', (req, res) => {
+	let defaults = {from, to};
+	let data = req.body;
+	let query;
+	
+	data = extend(defaults, data);
+	
+	let connection = MySQL.createConnection({
+		host: process.env.DB_HOST,
+		user: process.env.DB_USER,
+		password: process.env.DB_PASS,
+		database: process.env.DB_NAME
+	});
+	
+	connection.execute('SELECT AVG(`R`) AS `R`, AVG(`G`) AS `G`, AVG(`B`) AS `B` FROM `color_fun` GROUP BY R, G, B'), (err, results, fields) => {
+		res.header('Access-Control-Allow-Origin', '*');
+		res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
+		res.header('Access-Control-Allow-Headers', 'accept, content-type, x-parse-application-id, x-parse-rest-api-key, x-parse-session-token');
+
+		
+		if(err) {
+			res.status(500);
+			res.send(err);
+		} else if(results) {
+			res.status(200);
+			res.send(results);
+		}
+
+	});
+	
+	
+	connection.end();
+}
 
 app.post(/addColor\/(rgb|hex)/, (req, res) => {
 	let data = req.body;
 	let url_info = url.parse(req.url);
 	let type;
-	
-	console.log(req.url);
-	
-	if(/hex/.test(url_info.pathname))
-		type = 'hex';
-	if(/rgb/.test(url_info.pathname))
-		type = 'rgb';
+	let query;
 
 	// RGB and Hex is broken down to RGB values
 	let R = -1;
@@ -64,6 +124,10 @@ app.post(/addColor\/(rgb|hex)/, (req, res) => {
 	let post = {};
 	let connection;
 	
+	if(/hex/.test(url_info.pathname))
+		type = 'hex';
+	if(/rgb/.test(url_info.pathname))
+		type = 'rgb';
 	res.header('Access-Control-Allow-Origin', '*');
 	res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
 	res.header('Access-Control-Allow-Headers', 'accept, content-type, x-parse-application-id, x-parse-rest-api-key, x-parse-session-token');
@@ -121,12 +185,16 @@ app.post(/addColor\/(rgb|hex)/, (req, res) => {
 	post.G = G;
 	post.B = B;
 	
-	let query = connection.query('INSERT INTO `color_fun` SET ?', post, function(error, result, fields) {
-		if(error)
+	query = connection.query('INSERT INTO `color_fun` SET ?', post, function(error, result, fields) {
+		if(error) {
+			res.status(500);
 			res.send(error);
+		}
 			
-		if(result)
+		if(result) {
+			res.status(200);
 			res.send(result);
+		}
 	});
 	console.log(query);
 	connection.end();
